@@ -1,0 +1,35 @@
+﻿<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="./css/chooseimghelp_mb.css">
+  <title>人像采集</title>
+</head>
+<body>
+  <div class="cont">
+    <div class="toparea">
+          <img src="./img/mb/chooseimg_helper1.jpg" alt="chooseimage_helper">
+          <div class="chooseimage_dis">
+            <div class="dis_item">请按照证件照标准进行拍照或上传照片</div>
+            <div class="dis_item dis_itemlast">上传失败五次会暂停服务,成功上传后无法修改</div>
+          </div>
+    </div>
+    <div class="footerbtn">已做好准备，点击开始操作</div>
+  </div>
+</body>
+<script src="./js/jquery-1.11.3.min.js"></script>
+<script>
+$(document).ready(function () {
+    $(".footerbtn").on("click",function () {//拍照
+          localStorage.clear();
+          localStorage.setItem("submitsure","istrue");
+          var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+          parent.layer.close(index); //再执行关闭 
+    })
+})
+</script>
+
+</html>
