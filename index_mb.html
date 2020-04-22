@@ -1,665 +1,702 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <link rel="stylesheet" href="./css/index_mb.css?v=11.9">
-    <title>人像采集</title>
-</head>
+	<head>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+		<link rel="stylesheet" href="./css/index_mb.css?v=11.9">
+		<title>人像采集</title>
+	</head>
 
-<body>
-    <div class="cont">
-        <div class="toparea">
-            <div class="areatilte toptilte">
-                <span class="text">
-                    <span class="tip">
-                        <img src="./img/mb/index_top_left.png" alt=""></span>上传您的头像吧
-                </span>
-                <div class="right userclickbtn">
-                    <img src="./img/mb/index_top_right.png" alt="" class="sip">
-                    <div class="sipdis">从相册中选择</div>
-                </div>
-            </div>
-            <div class="areacont botcont">
-                <span class="selectarea userclickbtn">点击拍照</span>
-            </div>
-        </div>
-        <div class="botarea">
-            <div class="areatilte toptilte" style="display: none;">
-                <span class="text">
-                    <span class="tip">
-                        <img src="./img/mb/index_list_left.png" alt=""></span>历史记录
-                </span>
-            </div>
-            <div class="areacont botcont" style="display: none;">
-                <ul class="contlist">
-                </ul>
-            </div>
-        </div>
-    </div>
-    <div class="loading">
-        <div class="loading_child_fa">
-            <div class="loading_child">加载中,请您稍等!</div>
-        </div>
-    </div>
-</body>
-<script src="./js/jquery-1.11.3.min.js"></script>
-<script src="./js/layer/layer.js"></script>
-<!-- 企业微信的JS-SDK -->
-<script type="text/javascript" src="http://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
-<script>
-</script>
-<script>
-    var code = GetQueryString("code");
-    var loglists = [];
-    var wxkey = "";
-    var userid = "";
-    var okprivacy = false;
-    var hasget_privacyLOG = false;
-    var upload_localId = "";
-    var bolHasReset = false;
+	<body>
+		<div class="cont">
+			<div class="toparea">
+				<div class="areatilte toptilte">
+					<span class="text">
+						<span class="tip">
+							<img src="./img/mb/index_top_left.png" alt=""></span>上传您的头像吧
+					</span>
+					<div class="right userclickbtn">
+						<img src="./img/mb/index_top_right.png" alt="" class="sip">
+						<div class="sipdis">从相册中选择</div>
+					</div>
+				</div>
+				<div class="areacont botcont">
+					<span class="selectarea userclickbtn">点击拍照</span>
+				</div>
+			</div>
+			<div class="botarea">
+				<div class="areatilte toptilte" style="display: none;">
+					<span class="text">
+						<span class="tip">
+							<img src="./img/mb/index_list_left.png" alt=""></span>历史记录
+					</span>
+				</div>
+				<div class="areacont botcont" style="display: none;">
+					<ul class="contlist">
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div class="loading">
+			<div class="loading_child_fa">
+				<div class="loading_child">加载中,请您稍等!</div>
+			</div>
+		</div>
+	</body>
+	<script src="./js/jquery-1.11.3.min.js"></script>
+	<script src="./js/layer/layer.js"></script>
+	<!-- 新增start -->
+	<script src="./js/vconsole.min.js"></script>
+	<!-- 新增end -->
+	<!-- 企业微信的JS-SDK -->
+	<script type="text/javascript" src="http://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+	<script>
+	</script>
+	<script>
+		var code = GetQueryString("code");
+		var loglists = [];
+		var wxkey = "";
+		var userid = "";
+		var okprivacy = false;
+		var hasget_privacyLOG = false;
+		var upload_localId = "";
+		var bolHasReset = false;
 
-    $(document).ready(function () {
-        $("div.loading").show();
-        var ua = window.navigator.userAgent.toLowerCase();
-        if ((ua.match(/MicroMessenger/i) == 'micromessenger') && (ua.match(/wxwork/i) == 'wxwork')) {//"企业微信客户端"
-            var curwxkey = sessionStorage.getItem("wxkey");
-            if (curwxkey == null || curwxkey == "" || curwxkey == undefined) {
-                first_setConfig();
-            } else {
-                wxkey = curwxkey;
-                get_userinfor(wxkey);//拿到wxkey进一步获取用户信息
-            }
-        } else {//"微信客户端"( ua.match(/micromessenger/i) == 'micromessenger' )或者一般浏览器
-            //window.location.href="https://work.weixin.qq.com/join_form/Vybf0WELYaztqnYBTZdzdA/scan_web_index";
-            window.location.href = "https://work.weixin.qq.com/join_form/seHjoCDs3bYtpGxd4djXsA/scan_web_index";
-        }
-    });
+		$(document).ready(function() {
+			var vConsole = new VConsole();
+			$("div.loading").show();
+			var ua = window.navigator.userAgent.toLowerCase();
+			if ((ua.match(/MicroMessenger/i) == 'micromessenger') && (ua.match(/wxwork/i) == 'wxwork')) { //"企业微信客户端"
+				var curwxkey = sessionStorage.getItem("wxkey");
+				if (curwxkey == null || curwxkey == "" || curwxkey == undefined) {
+					first_setConfig();
+				} else {
+					wxkey = curwxkey;
+					get_userinfor(wxkey); //拿到wxkey进一步获取用户信息
+				}
+			} else { //"微信客户端"( ua.match(/micromessenger/i) == 'micromessenger' )或者一般浏览器
+				//window.location.href="https://work.weixin.qq.com/join_form/Vybf0WELYaztqnYBTZdzdA/scan_web_index";
+				window.location.href = "https://work.weixin.qq.com/join_form/seHjoCDs3bYtpGxd4djXsA/scan_web_index";
+			}
+		});
 
-    function first_setConfig() {//初始化页面配置
-        $.ajax({
-            url: "../Handler/HandlerWXInfo.ashx",
-            type: "GET",
-            data: {
-                code: code,
-                url: window.location.href
-            },
-            dataType: "json",
-            success: function (data) {
-                wxkey = data.UserKey;
-                sessionStorage.setItem("wxkey", wxkey);
-                //拿到wxkey进一步获取用户信息
-                get_userinfor(wxkey);
-                wx.config({
-                    beta: true,// 必须这么写，否则wx.invoke调用形式的jsapi会有问题
-                    debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
-                    appId: data.WeChatCoprId, // 必填，企业微信的corpID
-                    timestamp: data.timeStamp, // 必填，生成签名的时间戳
-                    nonceStr: data.noncestr, // 必填，生成签名的随机串
-                    signature: data.signature,// 必填，签名，见附录1
-                    jsApiList: ["chooseImage", "uploadImage", "downloadImage"],// 必填，需要使用的JS接口列表，所有JS接口列表见附录2
-                    fail: function (res) {
-                        sessionStorage.setItem("wxkey", "");
-                        if (bolHasReset) {
-                            layeropenCommon("页面初始化异常，请您稍后重试，谢谢！<br />" + res.errMsg, 2);
-                        }
-                        get_reset();
-                        return;
-                    }
-                });
-                
-                wx.error(function (res) {
-                    sessionStorage.setItem("wxkey", "");
-                    if (bolHasReset) {
-                        layeropenCommon("页面初始化异常，请您稍后重试，谢谢！<br />" + res.errMsg, 2);
-                    }
-                    get_reset();
-                    return;
-                });
+		function first_setConfig() { //初始化页面配置
+			$.ajax({
+				url: "../Handler/HandlerWXInfo.ashx",
+				type: "GET",
+				data: {
+					code: code,
+					url: window.location.href
+				},
+				dataType: "json",
+				success: function(data) {
+					console.log(data,'授权方面')
+					wxkey = data.UserKey;
+					// wxkey = 'miki.gao@roche.com';   //测试代码
+					// wxkey = 'cynthia.zhang@roche.com';   //测试代码
+					sessionStorage.setItem("wxkey", wxkey);
+					//拿到wxkey进一步获取用户信息
+					get_userinfor(wxkey);
+					wx.config({
+						beta: true, // 必须这么写，否则wx.invoke调用形式的jsapi会有问题
+						debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+						appId: data.WeChatCoprId, // 必填，企业微信的corpID
+						timestamp: data.timeStamp, // 必填，生成签名的时间戳
+						nonceStr: data.noncestr, // 必填，生成签名的随机串
+						signature: data.signature, // 必填，签名，见附录1
+						jsApiList: ["chooseImage", "uploadImage", "downloadImage"], // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+						fail: function(res) {
+							sessionStorage.setItem("wxkey", "");
+							if (bolHasReset) {
+								layeropenCommon("页面初始化异常，请您稍后重试，谢谢！<br />" + res.errMsg, 2);
+							}
+							get_reset();
+							return;
+						}
+					});
 
-                wx.ready(function () {
-                    wx.checkJsApi({
-                        jsApiList: ["chooseImage", "uploadImage", "downloadImage"], // 需要检测的JS接口列表，所有JS接口列表见附录2,
-                        success: function (ress) {
-                            // 以键值对的形式返回，可用的api值true，不可用为false
-                            // 如：{"checkResult":{"chooseImage":true},"errMsg":"checkJsApi:ok"}
-                        },
-                        fail: function (res) {
-                            sessionStorage.setItem("wxkey", "");
-                            if (bolHasReset) {
-                                layeropenCommon("页面初始化异常，请您稍后重试，谢谢！<br />" + res.errMsg, 2);
-                            }
-                            get_reset();
-                            return;
-                        }
-                    });
-                });
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                layeropenCommon(errorThrown, 3);
-            },
-            complete: function () {
-            }
-        });
-    }
+					wx.error(function(res) {
+						sessionStorage.setItem("wxkey", "");
+						if (bolHasReset) {
+							layeropenCommon("页面初始化异常，请您稍后重试，谢谢！<br />" + res.errMsg, 2);
+						}
+						get_reset();
+						return;
+					});
 
-    function get_reset() {
-        if (bolHasReset) {
-            return;
-        }
-        bolHasReset = true;
-        $.ajax({
-            url: "../Handler/HandlerWXInfo.ashx",
-            type: "GET",
-            data: {
-                code: code,
-                url: window.location.href,
-                RESET: "1"
-            },
-            dataType: "json",
-            success: function (data) {
-                first_setConfig();
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                //layeropenCommon(errorThrown, 3);
-                layeropenCommon("页面初始化异常，请您稍后重试，谢谢！<br />" + res.errMsg, 2);
-            },
-            complete: function () {
-            }
-        });
-    }
+					wx.ready(function() {
+						wx.checkJsApi({
+							jsApiList: ["chooseImage", "uploadImage", "downloadImage"], // 需要检测的JS接口列表，所有JS接口列表见附录2,
+							success: function(ress) {
+								// 以键值对的形式返回，可用的api值true，不可用为false
+								// 如：{"checkResult":{"chooseImage":true},"errMsg":"checkJsApi:ok"}
+							},
+							fail: function(res) {
+								sessionStorage.setItem("wxkey", "");
+								if (bolHasReset) {
+									layeropenCommon("页面初始化异常，请您稍后重试，谢谢！<br />" + res.errMsg, 2);
+								}
+								get_reset();
+								return;
+							}
+						});
+					});
+				},
+				error: function(XMLHttpRequest, textStatus, errorThrown) {
+					layeropenCommon(errorThrown, 3);
+				},
+				complete: function() {}
+			});
+		}
 
-    function get_userinfor(wxkeydata) {//获取用户详情
-        $.ajax({
-            url: "../Handler/HandlerGetUserInfoById.ashx",
-            type: "POST",
-            data: {
-                wxkey: wxkeydata,
-            },
-            dataType: "json",
-            success: function (data) {
-                if (data.byResult == "0") {
-                    userid = data.byMsg.id;
-                    get_privacyLOG();//隐私状态
-                } else if (data.byResult == "1") {//"用户不存在"
-                    layeropenCommon(data.byMsg, 2);
-                } else if (data.byResult == "9") {//数据库异常，请您稍后重试！谢谢！
-                    layeropenCommon(data.byMsg, 2);
-                }
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                layeropenCommon(errorThrown, 3);
-            },
-            complete: function () {
-            }
-        });
-    }
+		function get_reset() {
+			if (bolHasReset) {
+				return;
+			}
+			bolHasReset = true;
+			$.ajax({
+				url: "../Handler/HandlerWXInfo.ashx",
+				type: "GET",
+				data: {
+					code: code,
+					url: window.location.href,
+					RESET: "1"
+				},
+				dataType: "json",
+				success: function(data) {
+					first_setConfig();
+				},
+				error: function(XMLHttpRequest, textStatus, errorThrown) {
+					//layeropenCommon(errorThrown, 3);
+					layeropenCommon("页面初始化异常，请您稍后重试，谢谢！<br />" + res.errMsg, 2);
+				},
+				complete: function() {}
+			});
+		}
 
-    function get_loglists() {//操作日志
-        $.ajax({
-            url: "../Handler/HandlerLOGList.ashx",
-            type: "POST",
-            data: {
-                UserId: userid,
-            },
-            dataType: "json",
-            beforeSend: function () {
-                $("div.loading").show();
-            },
-            success: function (data) {
-                if (data.byResult == "0") {
-                    loglists = data.byMsg;
-                    if (loglists.length == 0) {
-                        var no_loglists = '<li class="itemcont nolog_itemcont">'
-                                         + '<div class="item_top"><img src="./img/mb/no_log.png" alt="stateimg"></div>'
-                                         + '<div class="item_bot">'
-                                         + '<div class="nodata_dis">' + '暂无历史记录' + '</div>'
-                                         + '<div class="nodata_dis">' + '点击按钮开始上传您的头像吧~' + '</div></div>'
-                                         + '</li>'
-                        $("ul.contlist").html(no_loglists);
-                        $(".botarea .areatilte.toptilte").show();
-                        $(".botarea .areacont.botcont").show();
-                    } else {
-                        var html_loglists = "";
-                        for (var i = 0; i < loglists.length; i++) {
-                            var logState = loglists[i].LogResult == "上传成功" ? "sucessState" : "errorState";
-                            var logImgsrc = loglists[i].LogResult == "上传成功" ? "./img/mb/index_list_success.png" : "./img/mb/index_list_error.png";
-                            html_loglists += '<li class="itemcont">'
-                                             + '<div class="item_left"><img src=' + logImgsrc + ' alt="stateimg"></div>'
-                                             + '<div class="item_right"><div class="state ' + logState + '">' + loglists[i].LogResult + '</div>'
-                                             + '<div class="dtime">拍摄于&nbsp;&nbsp;' + loglists[i].LogTime + '</div></div>'
-                                             + '</li>'
-                        }
-                        $("ul.contlist").html(html_loglists);
-                        $(".botarea .areatilte.toptilte").show();
-                        $(".botarea .areacont.botcont").show();
-                    }
-                } else {
-                    var no_loglists = '<li class="itemcont nolog_itemcont">'
-                                       + '<div class="item_top"><img src="./img/mb/no_log.png" alt="stateimg"></div>'
-                                       + '<div class="item_bot">'
-                                       + '<div class="nodata_dis">' + '暂无历史记录' + '</div>'
-                                       + '<div class="nodata_dis">' + '点击按钮开始上传您的头像吧~' + '</div></div>'
-                                       + '</li>'
-                    $("ul.contlist").html(no_loglists);
-                    $(".botarea .areatilte.toptilte").show();
-                    $(".botarea .areacont.botcont").show();
-                    console.log("用户操作日志为空", data.byMsg)
-                }
-                $("div.loading").hide();
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("div.loading").hide();
-            },
-            complete: function () {
-                $("div.loading").hide();
-            }
-        });
-    }
+		function get_userinfor(wxkeydata) { //获取用户详情
+			$.ajax({
+				url: "../Handler/HandlerGetUserInfoById.ashx",
+				type: "POST",
+				data: {
+					wxkey: wxkeydata,
+				},
+				dataType: "json",
+				success: function(data) {
+					console.log(data,'3333333333')
+					if (data.byResult == "0") {
+						userid = data.byMsg.id;
+						get_privacyLOG(); //隐私状态
+					} else if (data.byResult == "1") { //"用户不存在"
+						layeropenCommon(data.byMsg, 2);
+					} else if (data.byResult == "9") { //数据库异常，请您稍后重试！谢谢！
+						layeropenCommon(data.byMsg, 2);
+					}
+				},
+				error: function(XMLHttpRequest, textStatus, errorThrown) {
+					layeropenCommon(errorThrown, 3);
+				},
+				complete: function() {}
+			});
+		}
 
-    function get_privacyLOG() {//获取是否同意隐私协议状态
-        $.ajax({
-            url: "../Handler/HandlerPrivacyLOG.ashx",
-            type: "POST",
-            async: false,
-            data: {
-                PriFlag: "Sel",
-                UserId: userid,
-            },
-            dataType: "json",
-            success: function (data) {
-                if (data.byResult == "0") {//已同意
-                    okprivacy = true;
-                    hasget_privacyLOG = true;
-                } else if (data.byResult == "9") {//未同意
-                    okprivacy = false;
-                    hasget_privacyLOG = true;
-                }
-                get_loglists();//操作日志
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                layeropenCommon(errorThrown, 3);
-            },
-            complete: function () {
-                $("div.loading").hide();
-            }
-        });
-    }
+		function get_loglists() { //操作日志
+		console.log("get_loglists")
+			$.ajax({
+				url: "../Handler/HandlerLOGList.ashx",
+				type: "POST",
+				data: {
+					UserId: userid,
+				},
+				dataType: "json",
+				beforeSend: function() {
+					$("div.loading").show();
+				},
+				success: function(data) {
+					console.log(data,'获取操作日志')
+					if (data.byResult == "0") {
+						loglists = data.byMsg;
+						if (loglists.length == 0) {
+							var no_loglists = '<li class="itemcont nolog_itemcont">' +
+								'<div class="item_top"><img src="./img/mb/no_log.png" alt="stateimg"></div>' +
+								'<div class="item_bot">' +
+								'<div class="nodata_dis">' + '暂无历史记录' + '</div>' +
+								'<div class="nodata_dis">' + '点击按钮开始上传您的头像吧~' + '</div></div>' +
+								'</li>'
+							$("ul.contlist").html(no_loglists);
+							$(".botarea .areatilte.toptilte").show();
+							$(".botarea .areacont.botcont").show();
+						} else {
+							var html_loglists = "";
+							for (var i = 0; i < loglists.length; i++) {
+								var logState = loglists[i].LogResult == "上传成功" ? "sucessState" : "errorState";
+								var logImgsrc = loglists[i].LogResult == "上传成功" ? "./img/mb/index_list_success.png" :
+									"./img/mb/index_list_error.png";
+								html_loglists += '<li class="itemcont">' +
+									'<div class="item_left"><img src=' + logImgsrc + ' alt="stateimg"></div>' +
+									'<div class="item_right"><div class="state ' + logState + '">' + loglists[i].LogResult + '</div>' +
+									'<div class="dtime">拍摄于&nbsp;&nbsp;' + loglists[i].LogTime + '</div></div>' +
+									'</li>'
+							}
+							$("ul.contlist").html(html_loglists);
+							$(".botarea .areatilte.toptilte").show();
+							$(".botarea .areacont.botcont").show();
+						}
+					} else {
+						var no_loglists = '<li class="itemcont nolog_itemcont">' +
+							'<div class="item_top"><img src="./img/mb/no_log.png" alt="stateimg"></div>' +
+							'<div class="item_bot">' +
+							'<div class="nodata_dis">' + '暂无历史记录' + '</div>' +
+							'<div class="nodata_dis">' + '点击按钮开始上传您的头像吧~' + '</div></div>' +
+							'</li>'
+						$("ul.contlist").html(no_loglists);
+						$(".botarea .areatilte.toptilte").show();
+						$(".botarea .areacont.botcont").show();
+						console.log("用户操作日志为空", data.byMsg)
+					}
+					$("div.loading").hide();
+				},
+				error: function(XMLHttpRequest, textStatus, errorThrown) {
+					$("div.loading").hide();
+				},
+				complete: function() {
+					$("div.loading").hide();
+				}
+			});
+		}
 
-    function set_privacyLOG(ksbtype) {//设置是否同意隐私协议状态
-        $.ajax({
-            url: "../Handler/HandlerPrivacyLOG.ashx",
-            type: "POST",
-            data: {
-                PriFlag: "Add",
-                PriAgree: "Yes",
-                UserId: userid,
-            },
-            dataType: "json",
-            success: function (data) {
-                if (data.byResult == "0") {//设置成功
-                    okprivacy = true;
-                    if (ksbtype == 1) {
-                        dotrue_chooseImage();
-                    } else {
-                        dotrue_chooseAlbum();
-                    }
-                } else if (data.byResult == "9") {//设置未成功
-                    okprivacy = false;
-                }
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                layeropenCommon(errorThrown, 3);
-            },
-            complete: function () {
-            }
-        });
-    }
+		function get_privacyLOG() { //获取是否同意隐私协议状态
+			$.ajax({
+				url: "../Handler/HandlerPrivacyLOG.ashx",
+				type: "POST",
+				async: false,
+				data: {
+					PriFlag: "Sel",
+					UserId: userid,
+				},
+				dataType: "json",
+				success: function(data) {
+					console.log(data, '获取是否同意隐私协议状态结果')
+					if (data.byResult == "0") { //已同意
+						okprivacy = true;
+						hasget_privacyLOG = true;
+					} else if (data.byResult == "9") { //未同意
+						okprivacy = false;
+						hasget_privacyLOG = true;
+					}
+					get_loglists(); //操作日志
+				},
+				error: function(XMLHttpRequest, textStatus, errorThrown) {
+					layeropenCommon(errorThrown, 3);
+				},
+				complete: function() {
+					$("div.loading").hide();
+				}
+			});
+		}
 
-    //拍照
-    $(".selectarea.userclickbtn").on("click", function () {
-        if (judgestate()) {
-            if (hasget_privacyLOG) {
-                if (okprivacy) {
-                    dotrue_chooseImage();
-                } else {
-                    layerConceal("camera");
-                }
-            } else {
-                layeropenCommon("页面正在初始化，请您稍后重试，谢谢！", 1)
-            }
-        }
-    })
+		function set_privacyLOG(ksbtype) { //设置是否同意隐私协议状态
+			$.ajax({
+				url: "../Handler/HandlerPrivacyLOG.ashx",
+				type: "POST",
+				data: {
+					PriFlag: "Add",
+					PriAgree: "Yes",
+					UserId: userid,
+				},
+				dataType: "json",
+				success: function(data) {
+					console.log(data, '设置是否同意隐私协议状态')
+					if (data.byResult == "0") { //设置成功
+						okprivacy = true;
+						if (ksbtype == 1) {
+							dotrue_chooseImage();
+						} else {
+							dotrue_chooseAlbum();
+						}
+					} else if (data.byResult == "9") { //设置未成功
+						okprivacy = false;
+					}
+				},
+				error: function(XMLHttpRequest, textStatus, errorThrown) {
+					layeropenCommon(errorThrown, 3);
+				},
+				complete: function() {}
+			});
+		}
 
-    //选择相册图片
-    $(".right.userclickbtn").on("click", function () {
-        if (judgestate()) {
-            if (hasget_privacyLOG) {
-                if (okprivacy) {
-                    dotrue_chooseAlbum();
-                } else {
-                    layerConceal("album");
-                }
-            } else {
-                layeropenCommon("页面正在初始化，请您稍后重试，谢谢！", 1)
-            }
-        }
-    })
+		//拍照
+		$(".selectarea.userclickbtn").on("click", function() {
+			console.log(judgestate(), hasget_privacyLOG, okprivacy, '8888888888888888888')
+			if (judgestate()) {
+				if (hasget_privacyLOG) {
+					if (okprivacy) {
+						dotrue_chooseImage();
+					} else {
+						layerConceal("camera");
+					}
+				} else {
+					layeropenCommon("页面正在初始化，请您稍后重试，谢谢！", 1)
+				}
+			}else{
+				console.log("出错了")
+			}
+		})
 
-    function judgestate() {//判断是否符合拍照条件
-        var oknext_tip = false;
-        $.ajax({
-            url: "../Handler/HandlerIsAllowUpLoad.ashx",
-            type: "POST",
-            async: false,
-            data: {
-                UserId: userid,
-            },
-            dataType: "json",
-            success: function (data) {
-                if (data.byResult == "0") {//可以拍照、选取相册
-                    oknext_tip = true;
-                } else if (data.byResult == "1") {//当日三次
-                    oknext_tip = false;
-                    layerThreeErrorAndEditafter(data.byMsg, "three");
-                } else if (data.byResult == "2") {//当月一次
-                    oknext_tip = false;
-                    layerThreeErrorAndEditafter(data.byMsg, "space");
-                }
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                layeropenCommon(errorThrown, 3);
-            },
-            complete: function () {
-            }
-        });
-        return oknext_tip;
-    }
+		//选择相册图片
+		$(".right.userclickbtn").on("click", function() {
+			console.log(judgestate(), hasget_privacyLOG, okprivacy, '99999999999999')
+			if (judgestate()) {
+				if (hasget_privacyLOG) {
+					if (okprivacy) {
+						dotrue_chooseAlbum();
+					} else {
+						layerConceal("album");
+					}
+				} else {
+					layeropenCommon("页面正在初始化，请您稍后重试，谢谢！", 1)
+				}
+			}
+		})
 
-    function usechooseImage(sourceTypestr) {//封装会回显示处理
-        var sourceType = [sourceTypestr];
-        wx.chooseImage({
-            count: 1, // 默认9
-            sizeType: ['original'], // 可以指定是原图还是压缩图，默认二者都有
-            sourceType: sourceType, // 可以指定来源是相册还是相机，默认二者都有
-            // defaultCameraMode: "batch", //表示进入拍照界面的默认模式，目前有normal与batch两种选择，normal表示普通单拍模式，batch表示连拍模式，不传该参数则为normal模式。（注：用户进入拍照界面仍然可自由切换两种模式）
-            isSaveToAlbum: 1, //整型值，0表示拍照时不保存到系统相册，1表示自动保存，默认值是1
-            success: function (res) {
-                $("div.loading").show();
-                var localId = res.localIds[0]; // 返回选定照片的本地ID列表，localId可以作为img标签的src属性显示图片
-                upload_img(localId);//上传图片
-            },
-            fail: function (res) {
-                $("div.loading").hide();
-                layeropenCommon("页面异常，请您稍后重试，谢谢！", 1)
-                console.log("开启失败", res)
-            }
-        });
-    }
+		function judgestate() { //判断是否符合拍照条件
+			var oknext_tip = false;
+			$.ajax({
+				url: "../Handler/HandlerIsAllowUpLoad.ashx",
+				type: "POST",
+				async: false,
+				data: {
+					UserId: userid,
+				},
+				dataType: "json",
+				success: function(data) {
+					console.log(data, '判断是否符合拍照条件')
+					if (data.byResult == "0") { //可以拍照、选取相册
+						oknext_tip = true;
+					} else if (data.byResult == "1") { //当日三次
+						oknext_tip = false;
+						layerThreeErrorAndEditafter(data.byMsg, "three");
+					} else if (data.byResult == "2") { //当月一次
+						oknext_tip = false;
+						layerThreeErrorAndEditafter(data.byMsg, "space");
+					}
+				},
+				error: function(XMLHttpRequest, textStatus, errorThrown) {
+					layeropenCommon(errorThrown, 3);
+				},
+				complete: function() {}
+			});
+			return oknext_tip;
+		}
 
-    function upload_img(localId) {//上传前判断是否真的使用
-        $("div.loading").hide();
-        upload_localId = localId;
-        if (isIOS()) {//ios
-            wx.getLocalImgData({
-                localId: localId, // 图片的localID
-                success: function (res) {
-                    var localData = res.localData; // localData是图片的base64数据，可以用img标签显示
-                    var imgsrc = localData;
-                    var layerConcealContent = "<div class='page-shade'></div><div class='LayerContent_self'>"
-                                            + "<div class='LayerContenttop_upload_self'><div class='upload_img_title_self'>" + "<div style='background-image:url(" + imgsrc + ")'></div>" + "</div></div>"
-                                            + "<div class='LayerContentbtn_self'><span class='agree_self' onclick='upload_img_true_stepa()'>确认并使用</span>"
-                                            + "<span class='noagree_self' onclick='btnCloselayer_self()'>取消</span>"
-                                            + "<span class='text_self'><img src='./img/mb/layeropen_txtip.png'>照片成功上传后将无法更换,点击确认继续</span>"
-                                            + "</div>"
-                                            + "</div>"
-                    if ($(".page-shade")) {
-                        $(".page-shade").remove();
-                        $(".LayerContent_self").remove();
-                    }
-                    $("body").append(layerConcealContent);
-                    $(".cont").hide();
-                },
-                fail: function (res) {
-                    $("div.loading").hide();
-                    layeropenCommon("页面异常，请您稍后重试，谢谢！", 1)
-                    console.log("开启失败", res)
-                }
-            });
-        } else {//andriod
-            var imgsrc = localId;
-            var layerConcealContent = "<div class='page-shade'></div><div class='LayerContent_self'>"
-                                    + "<div class='LayerContenttop_upload_self'><div class='upload_img_title_self'>" + "<div style='background-image:url(" + imgsrc + ")'></div>" + "</div></div>"
-                                    + "<div class='LayerContentbtn_self'><span class='agree_self' onclick='upload_img_true_stepa()'>确认并使用</span>"
-                                    + "<span class='noagree_self' onclick='btnCloselayer_self()'>取消</span>"
-                                    + "<span class='text_self'><img src='./img/mb/layeropen_txtip.png'>照片成功上传后将无法更换,点击确认继续</span>"
-                                    + "</div>"
-                                    + "</div>"
-            if ($(".page-shade")) {
-                $(".page-shade").remove();
-                $(".LayerContent_self").remove();
-            }
-            $("body").append(layerConcealContent);
-            $(".cont").hide();
-        }
-    }
-    function btnCloselayer_self() {
-        if ($(".page-shade")) {
-            $(".page-shade").remove();
-            $(".LayerContent_self").remove();
-            $(".cont").show();
-        }
-    }
-    function upload_img_true_stepa() {
-        var upload_stepa_localId = upload_localId;
-        btnCloselayer_self()//执行关闭
-        $("div.loading").show();
-        wx.uploadImage({
-            localId: upload_stepa_localId,
-            isShowProgressTips: 0, // 默认为1，显示进度提示
-            success: function (res) {
-                var serverId = res.serverId; // 返回图片的服务器端ID
-                upload_img_true_stepb("", "False", serverId);//上传图片
-            },
-            fail: function (res) {
-                $("div.loading").hide();
-                layeropenCommon("页面异常，请您稍后重试，谢谢！", 1)
-                console.log("开启失败", res)
-            }
-        })
-    }
+		function usechooseImage(sourceTypestr) { //封装会回显示处理
+			console.log("usechooseImage",sourceTypestr)
+			var sourceType = [sourceTypestr];
+			console.log(sourceType,"sourceType")
+			wx.chooseImage({
+				count: 1, // 默认9
+				sizeType: ['original'], // 可以指定是原图还是压缩图，默认二者都有
+				sourceType: sourceType, // 可以指定来源是相册还是相机，默认二者都有
+				// defaultCameraMode: "batch", //表示进入拍照界面的默认模式，目前有normal与batch两种选择，normal表示普通单拍模式，batch表示连拍模式，不传该参数则为normal模式。（注：用户进入拍照界面仍然可自由切换两种模式）
+				isSaveToAlbum: 1, //整型值，0表示拍照时不保存到系统相册，1表示自动保存，默认值是1
+				success: function(res) {
+					console.log(res,sourceTypestr,"success")
+					$("div.loading").show();
+					var localId = res.localIds[0]; // 返回选定照片的本地ID列表，localId可以作为img标签的src属性显示图片
+					upload_img(localId); //上传图片
+				},
+				fail: function(res) {
+					console.log(res,sourceTypestr,"fail")
+					$("div.loading").hide();
+					layeropenCommon("页面异常，请您稍后重试，谢谢！", 1)
+					console.log("开启失败", res)
+				}
+			});
+		}
 
-    function upload_img_true_stepb(UserPicStream, IsBaseType, Mediaid) {
-        $("div.loading").show();
-        $.ajax({
-            url: "../Handler/HandlerEquipment.ashx",
-            type: "POST",
-            data: {
-                UserId: userid,
-                UserPicStream: UserPicStream,
-                IsBaseType: IsBaseType,
-                Mediaid: Mediaid,
-            },
-            dataType: "json",
-            success: function (data) {
-                if (data.byResult == "1") {//可以拍照、选取相册
-                    layeropenCommon(data.errMsg, 1);
-                } else if (data.byResult == "0") {//失败
-                    layeropenCommon(data.errMsg, 1);
-                } else if (data.byResult == "2") {//瞳距过小
-                    layeropenCommon(data.errMsg, 1);
-                } else if (data.byResult == "3") {//照片大于200k
-                    layeropenCommon(data.errMsg, 1);
-                } else if (data.byResult == "6") {//access_token失效
-                    layeropenCommon(data.errMsg, 1);
-                    window.location.href = "../Roche/wxredirect.aspx"
-                } else {//不知名失败原因
-                    layeropenCommon(data.errMsg, 1);
-                }
-                $("div.loading").hide();
-                get_loglists();//操作日志
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                $("div.loading").hide();
-                layeropenCommon(errorThrown, 1)
-            },
-            complete: function () {
-                $("div.loading").hide();
-            }
-        });
-    }
+		function upload_img(localId) { //上传前判断是否真的使用
+		console.log("upload_img")
+			$("div.loading").hide();
+			upload_localId = localId;
+			if (isIOS()) { //ios
+				wx.getLocalImgData({
+					localId: localId, // 图片的localID
+					success: function(res) {
+						var localData = res.localData; // localData是图片的base64数据，可以用img标签显示
+						var imgsrc = localData;
+						var layerConcealContent = "<div class='page-shade'></div><div class='LayerContent_self'>" +
+							"<div class='LayerContenttop_upload_self'><div class='upload_img_title_self'>" +
+							"<div style='background-image:url(" + imgsrc + ")'></div>" + "</div></div>" +
+							"<div class='LayerContentbtn_self'><span class='agree_self' onclick='upload_img_true_stepa()'>确认并使用</span>" +
+							"<span class='noagree_self' onclick='btnCloselayer_self()'>取消</span>" +
+							"<span class='text_self'><img src='./img/mb/layeropen_txtip.png'>照片成功上传后将无法更换,点击确认继续</span>" +
+							"</div>" +
+							"</div>"
+						if ($(".page-shade")) {
+							$(".page-shade").remove();
+							$(".LayerContent_self").remove();
+						}
+						$("body").append(layerConcealContent);
+						$(".cont").hide();
+					},
+					fail: function(res) {
+						$("div.loading").hide();
+						layeropenCommon("页面异常，请您稍后重试，谢谢！", 1)
+						console.log("开启失败", res)
+					}
+				});
+			} else { //andriod
+				var imgsrc = localId;
+				var layerConcealContent = "<div class='page-shade'></div><div class='LayerContent_self'>" +
+					"<div class='LayerContenttop_upload_self'><div class='upload_img_title_self'>" +
+					"<div style='background-image:url(" + imgsrc + ")'></div>" + "</div></div>" +
+					"<div class='LayerContentbtn_self'><span class='agree_self' onclick='upload_img_true_stepa()'>确认并使用</span>" +
+					"<span class='noagree_self' onclick='btnCloselayer_self()'>取消</span>" +
+					"<span class='text_self'><img src='./img/mb/layeropen_txtip.png'>照片成功上传后将无法更换,点击确认继续</span>" +
+					"</div>" +
+					"</div>"
+				if ($(".page-shade")) {
+					$(".page-shade").remove();
+					$(".LayerContent_self").remove();
+				}
+				$("body").append(layerConcealContent);
+				$(".cont").hide();
+			}
+		}
 
-    //isAndroid or isIOS
-    function isIOS() {
-        var u = navigator.userAgent;
-        var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Linux') > -1;
-        var isIOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
-        if (isAndroid) {
-            return false;
-        }
-        if (isIOS) {
-            return true;
-        }
-    }
+		function btnCloselayer_self() {
+			if ($(".page-shade")) {
+				$(".page-shade").remove();
+				$(".LayerContent_self").remove();
+				$(".cont").show();
+			}
+		}
 
-    //获取url
-    function GetQueryString(name) {
-        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
-        var r = window.location.search.substr(1).match(reg);
-        if (r != null) return decodeURI(r[2]); return null;
-    }
+		function upload_img_true_stepa() {
+			var upload_stepa_localId = upload_localId;
+			btnCloselayer_self() //执行关闭
+			$("div.loading").show();
+			wx.uploadImage({
+				localId: upload_stepa_localId,
+				isShowProgressTips: 0, // 默认为1，显示进度提示
+				success: function(res) {
+					var serverId = res.serverId; // 返回图片的服务器端ID
+					upload_img_true_stepb("", "False", serverId); //上传图片
+				},
+				fail: function(res) {
+					$("div.loading").hide();
+					layeropenCommon("页面异常，请您稍后重试，谢谢！", 1)
+					console.log("开启失败", res)
+				}
+			})
+		}
 
-    function layerConceal(sftype) {//温馨提示,隐私询问
-        var sbtype = sftype == "camera" ? 1 : 2;
-        var pfirst = '<h2>人像采集告知函</h2>'
-                    + '<p>尊敬的员工：</p>'
-                    + '<p>由于公司门禁系统升级为人脸识别，为此需要收集您的个人正面照片，用于公司门禁系统的比对凭据。 </p>'
-                    + '<p>您所提供的上述照片将存放在公司位于境内的服务器上，并在您与公司劳动关系存续期间予以保存。</p>'
-                    + '<p>我们尊重和维护您的隐私权，我们仅可能基于对IT系统维修之必要目的，将您的上述信息提供给供应商。除此之外，我们不会在未获得您的同意前，将您的上述照片提供给任何第三方。</p>'
-                    + '<p>请您在仔细阅读告知函内容后，点击下方“确定” 按钮，以示您已阅读并同意我们处理您的个人信息。</p>'
-                    + '<p>恭祝</p>'
-                    + '<p>工作顺利！</p>'
-                    + '<p style="text-align:right">罗氏诊断产品（上海）有限公司</p>';
-        var layerConcealContent = '<div class="LayerContent">'
-          + '<div class="LayerContenttop">'
-          + '<div class="htext">' + pfirst + '</div></div>'
-          + '<div class="LayerContentbtn"><span class="noagree" onclick="btnCloselayer()">不同意</span>' + '<span class="hl"></span>' + '<span class="agree" onclick="btnAgreelayer(' + sbtype + ')">同意并继续</span></div>'
-          + '</div>'
-        layer.open({
-            type: 1,
-            shade: 0.4,//背景阴影度
-            shadeClose: true,
-            title: false,
-            closeBtn: 0,
-            content: layerConcealContent,
-            area: ['300px', '466px'],
-        })
-    }
+		function upload_img_true_stepb(UserPicStream, IsBaseType, Mediaid) {
+			$("div.loading").show();
+			$.ajax({
+				url: "../Handler/HandlerEquipment.ashx",
+				type: "POST",
+				data: {
+					UserId: userid,
+					UserPicStream: UserPicStream,
+					IsBaseType: IsBaseType,
+					Mediaid: Mediaid,
+				},
+				dataType: "json",
+				success: function(data) {
+					if (data.byResult == "1") { //可以拍照、选取相册
+						layeropenCommon(data.errMsg, 1);
+					} else if (data.byResult == "0") { //失败
+						layeropenCommon(data.errMsg, 1);
+					} else if (data.byResult == "2") { //瞳距过小
+						layeropenCommon(data.errMsg, 1);
+					} else if (data.byResult == "3") { //照片大于200k
+						layeropenCommon(data.errMsg, 1);
+					} else if (data.byResult == "6") { //access_token失效
+						layeropenCommon(data.errMsg, 1);
+						window.location.href = "../Roche/wxredirect.aspx"
+					} else { //不知名失败原因
+						layeropenCommon(data.errMsg, 1);
+					}
+					$("div.loading").hide();
+					get_loglists(); //操作日志
+				},
+				error: function(XMLHttpRequest, textStatus, errorThrown) {
+					$("div.loading").hide();
+					layeropenCommon(errorThrown, 1)
+				},
+				complete: function() {
+					$("div.loading").hide();
+				}
+			});
+		}
 
-    function layerThreeErrorAndEditafter(msg, errotype) {//成功后一段时间在修改提示
-        var pfirst = msg;
-        var imgsrc = "";
-        if (errotype == "space") {//一段时间成功了
-            imgsrc = "./img/mb/Editafter.png"
-        } else if (errotype == "three") {//失败三次
-            imgsrc = "./img/mb/ThreeError.png"
-        }
-        var layerEditafterContent = '<div class="LayerContent">'
-          + '<div class="LayerContenttop"><div class="EditContenttitle"><img src="' + imgsrc + '" alt="" class="Editafter"></div>'
-          + '<div class="Etext">' + pfirst + '</div></div>'
-          + '<div class="LayerContentbtn"><span class="EditKnow" onclick="btnCloselayer()">知道了</span></div>'
-          + '</div>'
-        layer.open({
-            type: 1,
-            shade: [1, '#ccc'],//背景阴影度及背景色
-            shadeClose: true,
-            title: false,
-            closeBtn: 0,
-            content: layerEditafterContent,
-            area: ['300px', '300px'],
-        })
-    }
+		//isAndroid or isIOS
+		function isIOS() {
+			var u = navigator.userAgent;
+			var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Linux') > -1;
+			var isIOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
+			if (isAndroid) {
+				return false;
+			}
+			if (isIOS) {
+				return true;
+			}
+		}
 
-    function btnCloselayer() {//关闭弹出层
-        layer.closeAll();
-    }
+		//获取url
+		function GetQueryString(name) {
+			var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+			var r = window.location.search.substr(1).match(reg);
+			if (r != null) return decodeURI(r[2]);
+			return null;
+		}
 
-    function btnAgreelayer(sbtype) {
-        var ksbtype = sbtype;
-        btnCloselayer()//执行关闭
-        if (!okprivacy) {
-            set_privacyLOG(ksbtype);
-        } else {
-            if (sbtype == 1) {
-                dotrue_chooseImage();
-            } else {
-                dotrue_chooseAlbum();
-            }
-        }
-    }
+		function layerConceal(sftype) { //温馨提示,隐私询问
+		console.log("layerConceal")
+			var sbtype = sftype == "camera" ? 1 : 2;
+			var pfirst = '<h2>人像采集告知函</h2>' +
+				'<p>尊敬的员工：</p>' +
+				'<p>由于公司门禁系统升级为人脸识别，为此需要收集您的个人正面照片，用于公司门禁系统的比对凭据。 </p>' +
+				'<p>您所提供的上述照片将存放在公司位于境内的服务器上，并在您与公司劳动关系存续期间予以保存。</p>' +
+				'<p>我们尊重和维护您的隐私权，我们仅可能基于对IT系统维修之必要目的，将您的上述信息提供给供应商。除此之外，我们不会在未获得您的同意前，将您的上述照片提供给任何第三方。</p>' +
+				'<p>请您在仔细阅读告知函内容后，点击下方“确定” 按钮，以示您已阅读并同意我们处理您的个人信息。</p>' +
+				'<p>恭祝</p>' +
+				'<p>工作顺利！</p>' +
+				'<p style="text-align:right">罗氏诊断产品（上海）有限公司</p>';
+			var layerConcealContent = '<div class="LayerContent">' +
+				'<div class="LayerContenttop">' +
+				'<div class="htext">' + pfirst + '</div></div>' +
+				'<div class="LayerContentbtn"><span class="noagree" onclick="btnCloselayer()">不同意</span>' +
+				'<span class="hl"></span>' + '<span class="agree" onclick="btnAgreelayer(' + sbtype + ')">同意并继续</span></div>' +
+				'</div>'
+			layer.open({
+				type: 1,
+				shade: 0.4, //背景阴影度
+				shadeClose: true,
+				title: false,
+				closeBtn: 0,
+				content: layerConcealContent,
+				area: ['300px', '466px'],
+			})
+		}
 
-    function dotrue_chooseImage() {//拍照提示
-        localStorage.clear();
-        layer.open({
-            type: 2,
-            shade: 0.4,//背景阴影度
-            shadeClose: true,
-            title: false,
-            closeBtn: 0,
-            content: "./chooseimagehelp_mb.html?v=1.9",
-            area: ['300px', '443px'],
-            end: function () {
-                var submit_sure = localStorage.getItem("submitsure");
-                if (submit_sure == "istrue") {
-                    usechooseImage('camera');
-                    localStorage.clear();
-                }
-            }
-        })
-    }
-    function dotrue_chooseAlbum() {//相册提示
-        localStorage.clear();
-        layer.open({
-            type: 2,
-            shade: 0.4,//背景阴影度
-            shadeClose: true,
-            title: false,
-            closeBtn: 0,
-            content: "./chooseimagehelp_mb.html?v=1.9",
-            area: ['300px', '443px'],
-            end: function () {
-                var submit_sure = localStorage.getItem("submitsure");
-                if (submit_sure == "istrue") {
-                    usechooseImage('album');
-                    localStorage.clear();
-                }
-            }
-        })
-    }
-    function layeropenCommon(txt, removetype) {
-        if (removetype == 1) {
-            var text = txt
-            layer.open({
-                type: 0 //1 Page层类型
-                , closeBtn: 0 //不显示关闭按钮
-                , area: ['300px', '150px']
-                , title: false
-                , shade: 0.1 //遮罩透明度
-                , maxmin: false//允许全屏最小化
-                , anim: 5//0-6的动画形式，-1不开启
-                , content: text
-            });
-        } else if (removetype == 2) {//2代表页面异常，或者超时或者非法登录
-            $("div.loading").hide();
-            $("body").empty();
-            $("body").append("<p class='tip_message'>" + txt + "</p>");//页面提示显示用户信息
-        } else if (removetype == 3) {
-            $("div.loading").hide();
-            $("body").empty();
-            $("body").append("<p class='tip_message'>" + txt + "</p>");//页面提示显示用户信息
-        }
-    }
-</script>
+		function layerThreeErrorAndEditafter(msg, errotype) { //成功后一段时间在修改提示
+			var pfirst = msg;
+			var imgsrc = "";
+			if (errotype == "space") { //一段时间成功了
+				imgsrc = "./img/mb/Editafter.png"
+			} else if (errotype == "three") { //失败三次
+				imgsrc = "./img/mb/ThreeError.png"
+			}
+			var layerEditafterContent = '<div class="LayerContent">' +
+				'<div class="LayerContenttop"><div class="EditContenttitle"><img src="' + imgsrc +
+				'" alt="" class="Editafter"></div>' +
+				'<div class="Etext">' + pfirst + '</div></div>' +
+				'<div class="LayerContentbtn"><span class="EditKnow" onclick="btnCloselayer()">知道了</span></div>' +
+				'</div>'
+			layer.open({
+				type: 1,
+				shade: [1, '#ccc'], //背景阴影度及背景色
+				shadeClose: true,
+				title: false,
+				closeBtn: 0,
+				content: layerEditafterContent,
+				area: ['300px', '300px'],
+			})
+		}
+
+		function btnCloselayer() { //关闭弹出层
+			layer.closeAll();
+		}
+
+		function btnAgreelayer(sbtype) {
+			var ksbtype = sbtype;
+			btnCloselayer() //执行关闭
+			if (!okprivacy) {
+				set_privacyLOG(ksbtype);
+			} else {
+				if (sbtype == 1) {
+					dotrue_chooseImage();
+				} else {
+					dotrue_chooseAlbum();
+				}
+			}
+		}
+
+		function dotrue_chooseImage() { //拍照提示
+			console.log("dotrue_chooseImage")
+			localStorage.clear();
+			layer.open({
+				type: 2,
+				shade: 0.4, //背景阴影度
+				shadeClose: true,
+				title: false,
+				closeBtn: 0,
+				content: "./chooseimagehelp_mb.html?v=1.9",
+				area: ['300px', '443px'],
+				end: function() {
+					var submit_sure = localStorage.getItem("submitsure");
+					console.log(submit_sure,'submit_sure 拍照')
+					if (submit_sure == "istrue") {
+						usechooseImage('camera');
+						localStorage.clear();
+					}
+				}
+			})
+		}
+
+		function dotrue_chooseAlbum() { //相册提示
+			console.log("dotrue_chooseAlbum")
+			localStorage.clear();
+			layer.open({
+				type: 2,
+				shade: 0.4, //背景阴影度
+				shadeClose: true,
+				title: false,
+				closeBtn: 0,
+				content: "./chooseimagehelp_mb.html?v=1.9",
+				area: ['300px', '443px'],
+				end: function() {
+					var submit_sure = localStorage.getItem("submitsure");
+					console.log(submit_sure,'submit_sure 相册')
+					if (submit_sure == "istrue") {
+						usechooseImage('album');
+						localStorage.clear();
+					}
+				}
+			})
+		}
+
+		function layeropenCommon(txt, removetype) {
+			if (removetype == 1) {
+				var text = txt
+				layer.open({
+					type: 0 //1 Page层类型
+						,
+					closeBtn: 0 //不显示关闭按钮
+						,
+					area: ['300px', '150px'],
+					title: false,
+					shade: 0.1 //遮罩透明度
+						,
+					maxmin: false //允许全屏最小化
+						,
+					anim: 5 //0-6的动画形式，-1不开启
+						,
+					content: text
+				});
+			} else if (removetype == 2) { //2代表页面异常，或者超时或者非法登录
+				$("div.loading").hide();
+				$("body").empty();
+				$("body").append("<p class='tip_message'>" + txt + "</p>"); //页面提示显示用户信息
+			} else if (removetype == 3) {
+				$("div.loading").hide();
+				$("body").empty();
+				$("body").append("<p class='tip_message'>" + txt + "</p>"); //页面提示显示用户信息
+			}
+		}
+	</script>
 </html>

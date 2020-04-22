@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-cn">
 
 <head>
@@ -21,11 +21,19 @@
   </div>
 </body>
 <script src="./js/jquery-1.11.3.min.js"></script>
+	<!-- 新增start -->
+	<script src="./js/vconsole.min.js"></script>
+	<!-- 新增end -->
 <script>
 $(document).ready(function () {
+	var vConsole = new VConsole();
     $(".footerbtn").on("click",function () {//拍照
           localStorage.clear();
           localStorage.setItem("submitsure","istrue");
+					/**
+					 * 参考网址：https://www.layui.com/doc/modules/layer.html
+					 */
+					console.log("开始操作")
           var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
           parent.layer.close(index); //再执行关闭 
     })
